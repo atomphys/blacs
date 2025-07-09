@@ -365,6 +365,12 @@ class QueueManager(object):
     @inmain_decorator(True)
     def append(self, h5files):
         for file in h5files:
+            if "ADDTOTOP" in file:
+                self.prepend(file)
+                return
+            if "ADDSECOND" in file:
+                self.putatposition(file,1)
+                return 
             item = QStandardItem(file)
             item.setToolTip(file)
             self._model.appendRow(item)
@@ -373,7 +379,10 @@ class QueueManager(object):
     def prepend(self,h5file):
         if not self.is_in_queue(h5file):
             self._model.insertRow(0,QStandardItem(h5file))
-    
+    @inmain_decorator(True)
+    def putatposition(self,h5file,position):
+        if not self.is_in_queue(h5file):
+            self._model.insertRow(position,QStandardItem(h5file))
     def process_request(self,h5_filepath):
         # check connection table
         try:
